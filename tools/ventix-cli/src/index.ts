@@ -7,6 +7,8 @@ import { c } from './lib/colors';
 import { createPlugin } from './commands/create-plugin';
 import { validate } from './commands/validate';
 import { doctor } from './commands/doctor';
+import { build } from './commands/build';
+import { dev } from './commands/dev';
 
 const argv = process.argv.slice(2);
 
@@ -19,6 +21,8 @@ ${c.bold('USAGE')}
 ${c.bold('COMMANDS')}
   ${c.cyan('create plugin')}    scaffold a new plugin under libs/plugins/
   ${c.cyan('validate')}         validate a ventix.plugin.json against RFC-0001
+  ${c.cyan('build')}            deploy a plugin to the shell (one-shot)
+  ${c.cyan('dev')}              watch a plugin and auto-deploy on save
   ${c.cyan('doctor')}           print environment + workspace health
   ${c.cyan('help')}             this message
 
@@ -26,15 +30,17 @@ ${c.bold('EXAMPLES')}
   ${c.dim('# scaffold:')}
   ventix create plugin --id com.acme.crm-plus --name "Acme CRM+"
 
-  ${c.dim('# validate:')}
+  ${c.dim('# build (one-shot):')}
+  ventix build --plugin com.acme.crm-plus
+
+  ${c.dim('# dev (watch mode):')}
+  ventix dev --plugin com.acme.crm-plus
+
+  ${c.dim('# validate manifest:')}
   ventix validate                        ${c.gray('# uses ./ventix.plugin.json')}
-  ventix validate libs/plugins/foo/ventix.plugin.json
 
   ${c.dim('# doctor:')}
   ventix doctor
-
-${c.bold('PHASE 0 STATUS')}
-  build, dev — coming next sprint (CLI EPIC-6).
 `;
 
 async function main(): Promise<number> {
@@ -74,6 +80,22 @@ async function main(): Promise<number> {
       case 'validate': {
         const positionals = rest.filter((s) => !s.startsWith('--'));
         await validate({ ...(positionals[0] ? { path: positionals[0] } : {}) });
+        return 0;
+      }
+      case 'build': {
+        const { values } = parseArgs({
+          args: rest,
+          options: { plugin: { type: 'string' } },
+        });
+        await build({ ...(values['plugin'] ? { plugin: values['plugin'] as string } : {}) });
+        return 0;
+      }
+      case 'dev': {
+        const { values } = parseArgs({
+          args: rest,
+          options: { plugin: { type: 'string' } },
+        });
+        await dev({ ...(values['plugin'] ? { plugin: values['plugin'] as string } : {}) });
         return 0;
       }
       case 'doctor': {
