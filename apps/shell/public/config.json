@@ -1,0 +1,5 @@
+{
+  "env": "dev",
+  "registryUrl": "/registry.json",
+  "pluginHostUrl": "http://localhost:4300"
+}

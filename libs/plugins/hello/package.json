@@ -1,0 +1,7 @@
+{
+  "name": "@ventix-plugins/hello",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phase 0 reference plugin. Proves the runtime plugin loop end-to-end.",
+  "type": "module"
+}

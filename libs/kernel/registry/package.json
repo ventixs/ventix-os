@@ -1,0 +1,13 @@
+{
+  "name": "@ventix/kernel-registry",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/core": "^20.0.0",
+    "@ventix/plugin-api": "workspace:*"
+  }
+}

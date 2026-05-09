@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "es2022",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "importHelpers": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "ignoreDeprecations": "5.0",
+    "baseUrl": ".",
+    "paths": {
+      "@ventix/plugin-api":          ["libs/sdk/plugin-api/src/index.ts"],
+      "@ventix/plugin-api/manifest": ["libs/sdk/plugin-api/src/manifest/index.ts"],
+      "@ventix/plugin-api/testing":  ["libs/sdk/plugin-api/src/testing/index.ts"],
+      "@ventix/kernel-bootstrap":    ["libs/kernel/bootstrap/src/index.ts"],
+      "@ventix/kernel-registry":     ["libs/kernel/registry/src/index.ts"],
+      "@ventix/kernel-runtime":      ["libs/kernel/plugin-runtime/src/index.ts"],
+      "@ventix/kernel-router":       ["libs/kernel/router-dynamic/src/index.ts"],
+      "@ventix/kernel-nav":          ["libs/kernel/nav/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "kernel-runtime",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/kernel/plugin-runtime/src",
+  "tags": ["scope:kernel"],
+  "targets": {
+    "lint": { "executor": "@nx/eslint:lint" },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": { "reportsDirectory": "../../../coverage/libs/kernel/plugin-runtime" }
+    }
+  }
+}

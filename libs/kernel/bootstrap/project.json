@@ -1,0 +1,10 @@
+{
+  "name": "kernel-bootstrap",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/kernel/bootstrap/src",
+  "tags": ["scope:kernel"],
+  "targets": {
+    "lint": { "executor": "@nx/eslint:lint" }
+  }
+}

@@ -1,0 +1,43 @@
+/* VENTIX shell base styles. Plugins must NOT override these.
+ * Tailwind 4 imports land here in Sprint 1 Day 9. Phase 0 keeps it minimal. */
+
+:root {
+  --vtx-color-bg: #0b0d10;
+  --vtx-color-fg: #e6e8eb;
+  --vtx-color-muted: #8a8f98;
+  --vtx-color-accent: #4f8cff;
+  --vtx-space-1: 0.25rem;
+  --vtx-space-2: 0.5rem;
+  --vtx-space-3: 1rem;
+  --vtx-space-4: 1.5rem;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--vtx-color-bg);
+  color: var(--vtx-color-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  height: 100%;
+}
+
+.vtx-shell-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vtx-space-3);
+  padding: var(--vtx-space-2) var(--vtx-space-3);
+  border-bottom: 1px solid #1c1f24;
+}
+
+.vtx-brand { font-weight: 700; letter-spacing: 0.04em; color: var(--vtx-color-fg); text-decoration: none; }
+.vtx-tenant { color: var(--vtx-color-accent); font-size: 0.875rem; padding: 2px 8px; border: 1px solid var(--vtx-color-accent); border-radius: 4px; }
+
+.vtx-nav { display: flex; gap: var(--vtx-space-2); flex: 1; flex-wrap: wrap; }
+.vtx-nav-item { color: var(--vtx-color-muted); text-decoration: none; padding: var(--vtx-space-1) var(--vtx-space-2); border-radius: 4px; }
+.vtx-nav-item:hover { color: var(--vtx-color-fg); background: #1c1f24; }
+.vtx-nav-empty { color: var(--vtx-color-muted); font-style: italic; font-size: 0.875rem; }
+
+.vtx-status { color: var(--vtx-color-muted); font-size: 0.75rem; font-family: ui-monospace, monospace; }
+
+.vtx-shell-main { padding: var(--vtx-space-3); }

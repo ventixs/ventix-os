@@ -1,0 +1,16 @@
+packages:
+  - 'apps/*'
+  - 'libs/kernel/*'
+  - 'libs/sdk/*'
+  - 'libs/plugins/*'
+  - 'tools/*'
+
+# pnpm 11 requires explicit approval for packages with build scripts.
+# All entries below are trusted, well-known build tools required for Angular/Nx.
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  less: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
