@@ -14,21 +14,5 @@
     "navigation": [
       { "id": "hello-home", "label": "Hello", "route": "/com.demo.hello/home", "order": 100 }
     ]
-  },
-  {
-    "$schema": "https://ventix.dev/schemas/plugin.v1.json",
-    "id": "com.demo.hello-mf",
-    "name": "Hello (MF)",
-    "version": "1.0.0",
-    "vendor": { "name": "VENTIX" },
-    "license": "Apache-2.0",
-    "engine": { "ventix": "^0.1.0" },
-    "frontend": {
-      "remoteEntry": "/plugins/com.demo.hello-mf/remoteEntry.js",
-      "exposedModule": "./Plugin"
-    },
-    "navigation": [
-      { "id": "hello-mf-home", "label": "Hello (MF)", "route": "/com.demo.hello-mf/home", "order": 110 }
-    ]
   }
 ]

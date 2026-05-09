@@ -1,5 +1,5 @@
-import { t as __vitePreload } from "./preload-helper.js";
 import "./dist.js";
+import { t as __vitePreload } from "./preload-helper.js";
 //#region \0virtual:mf-localSharedImportMap:__mfe_internal__com_demo_hello_mf
 var importMap = {
 	"@angular/common": async () => {

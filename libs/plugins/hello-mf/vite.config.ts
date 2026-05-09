@@ -11,6 +11,10 @@ import { federation } from '@module-federation/vite';
  * Shared singletons must mirror SHARED_SINGLETONS in the shell's MF init.
  */
 export default defineConfig({
+  // The plugin is served from /plugins/com.demo.hello-mf/ on the shell host.
+  // `base` prefixes every asset URL the bundler emits so dynamic imports
+  // (e.g. loadComponent: () => import('./home.component')) resolve correctly.
+  base: '/plugins/com.demo.hello-mf/',
   build: {
     target: 'es2022',
     minify: false,

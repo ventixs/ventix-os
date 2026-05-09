@@ -1,5 +1,5 @@
-import { t as __vitePreload } from "./preload-helper.js";
 import { t as createInstance } from "./dist.js";
+import { t as __vitePreload } from "./preload-helper.js";
 //#region virtual:mf-REMOTE_ENTRY_ID:__mfe_internal__com_demo_hello_mf__remoteEntry_js
 if (typeof __VUE_HMR_RUNTIME__ === "undefined") globalThis.__VUE_HMR_RUNTIME__ = {
 	createRecord() {},

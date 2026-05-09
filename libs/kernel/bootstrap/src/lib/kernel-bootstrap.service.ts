@@ -11,6 +11,13 @@
  * One broken step never blanks the UI.
  */
 import { Injectable, inject, signal } from '@angular/core';
+// Eagerly import the host's Angular modules so we can hand the SAME live
+// instances to MF's share registry — plugins must resolve to these, not
+// to bundled copies, otherwise NG0200 (circular dep / dual Angular) fires.
+import * as ngCore from '@angular/core';
+import * as ngCommon from '@angular/common';
+import * as ngRouter from '@angular/router';
+import * as rxjs from 'rxjs';
 import { PluginOrchestrator, initMfHost, type ContextFactoryDeps, type NavRegistrar } from '@ventix/kernel-runtime';
 import { DynamicRouterService } from '@ventix/kernel-router';
 import { TenantContext, UserContext } from './tenant-context.service';
@@ -34,9 +41,14 @@ export class KernelBootstrap {
       this.userCtx.initialize({ id: 'dev-user', roles: ['admin'] });
 
       // Initialize Module Federation host (ADR-0004). Idempotent. Plugins
-      // built as MF remotes share Angular + the SDK contract through this.
-      // Plain-JS plugins continue to work via ImportLoader without using MF.
-      initMfHost('ventix-shell');
+      // built as MF remotes resolve their `@angular/*` imports to THESE
+      // live instances via the share registry — no Angular duplication.
+      initMfHost({
+        '@angular/core':   () => ngCore,
+        '@angular/common': () => ngCommon,
+        '@angular/router': () => ngRouter,
+        rxjs:              () => rxjs,
+      });
 
       // 2. Wire orchestrator. NavRegistrar is a Phase 0 no-op since plugins
       //    declare nav in the manifest; runtime nav.register lands in Phase 1.

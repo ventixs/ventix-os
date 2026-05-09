@@ -1,7 +1,7 @@
 //#region \0vite/preload-helper.js
 var scriptRel = "modulepreload";
 var assetsURL = function(dep) {
-	return "/" + dep;
+	return "/plugins/com.demo.hello-mf/" + dep;
 };
 var seen = {};
 var __vitePreload = function preload(baseModule, deps, importerUrl) {

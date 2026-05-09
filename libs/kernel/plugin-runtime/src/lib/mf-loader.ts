@@ -1,19 +1,14 @@
 /**
- * Module Federation runtime loader. Replaces ImportLoader as the default
- * Phase 1 path. Implements ADR-0004.
+ * Module Federation runtime loader. Implements ADR-0004.
  *
- * Strategy:
- *  1. The shell calls `initMfHost(SHARED_SINGLETONS)` at bootstrap so the
- *     MF registry is alive before any plugin loads.
- *  2. For each plugin, we register the remote (manifest.id → remoteEntry URL)
- *     and call loadRemote('<id>/<exposedModule>').
- *  3. The remote's default export is the VentixPluginModule produced by
- *     definePlugin().
+ * The host MUST register its already-loaded Angular instance modules via
+ * `lib:` functions so plugins resolve to the SAME instance — otherwise
+ * each plugin bundles its own Angular copy and ChangeDetection / DI fail
+ * with NG0200 "circular dependency" errors.
  *
- * Phase 0 ImportLoader stays available as a fallback for plain-JS plugins
+ * Phase 0 ImportLoader stays available as the loader for plain-JS plugins
  * that don't use shared singletons. The orchestrator picks the loader based
- * on whether the manifest's exposedModule looks like an MF entry point
- * (starts with './') vs a plain ESM file.
+ * on whether the manifest's remoteEntry ends with `/remoteEntry.js`.
  */
 import {
   init,
@@ -25,41 +20,54 @@ import type { VentixPluginModule } from '@ventix/plugin-api';
 import type { PluginLoader } from './loader';
 
 /**
- * Shared singletons. Conforms to the kernel spec §3.4.
- *
- * - `strictVersion: true` on the SDK contract — version skew is a
- *   correctness bug, not a perf hint.
- * - Loose-version on Angular packages so legitimate plugins built against
- *   minor versions still load.
+ * Pre-loaded module factories. Each value is a function returning the
+ * already-loaded module — this lets the host wire its bundled Angular,
+ * router, etc. into MF's share registry so plugins consume the SAME
+ * instance.
  */
-export const SHARED_SINGLETONS = {
-  '@angular/core':            { singleton: true, requiredVersion: '*', strictVersion: false },
-  '@angular/common':          { singleton: true, requiredVersion: '*', strictVersion: false },
-  '@angular/router':          { singleton: true, requiredVersion: '*', strictVersion: false },
-  '@angular/forms':           { singleton: true, requiredVersion: '*', strictVersion: false },
-  rxjs:                       { singleton: true, requiredVersion: '*', strictVersion: false },
-  '@ventix/plugin-api':       { singleton: true, requiredVersion: '*', strictVersion: true  },
-} as const;
+export type SharedLibFactories = Readonly<Record<string, () => unknown>>;
 
 let hostInitialized = false;
 const registered = new Set<string>();
 
 /**
- * Initialize the MF host. Idempotent — safe to call multiple times.
- * Called once during shell bootstrap.
+ * Initialize the MF host. Idempotent. Pass `libs` to register pre-loaded
+ * modules into the MF share scope so plugin bundles deduplicate against
+ * the host's already-loaded Angular.
+ *
+ * @example
+ * import * as ngCore from '@angular/core';
+ * import * as ngCommon from '@angular/common';
+ * initMfHost({
+ *   '@angular/core': () => ngCore,
+ *   '@angular/common': () => ngCommon,
+ * });
  */
-export function initMfHost(name = 'ventix-shell'): void {
+export function initMfHost(libs: SharedLibFactories = {}, name = 'ventix-shell'): void {
   if (hostInitialized) return;
-  // SAFETY: @module-federation's `init` typing is incompatible with
-  // exactOptionalPropertyTypes:true (declares shared as optional but the
-  // type extraction yields undefined-able). Our shared map is correct at
-  // runtime; this cast is the cleanest way around the typing issue.
+
+  const shared: Record<string, unknown> = {};
+  for (const [pkg, factory] of Object.entries(libs)) {
+    shared[pkg] = {
+      version: '20.0.0',
+      scope: 'default',
+      lib: factory,
+      // `loaded: true` tells the runtime the module is already in memory
+      // and the lib() factory should be called synchronously — without
+      // this, the runtime treats the share as lazy and may fall back to
+      // the plugin's bundled copy.
+      loaded: 1,
+      shareConfig: {
+        singleton: true,
+        requiredVersion: false,
+      },
+    };
+  }
+
+  // SAFETY: @module-federation's init typing is incompatible with
+  // exactOptionalPropertyTypes:true. Our shape is correct at runtime.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (init as any)({
-    name,
-    remotes: [],
-    shared: SHARED_SINGLETONS,
-  });
+  (init as any)({ name, remotes: [], shared });
   hostInitialized = true;
 }
 
@@ -77,6 +85,8 @@ export class MfLoader implements PluginLoader {
         {
           name: manifest.id,
           entry: manifest.frontend.remoteEntry,
+          // Vite + @module-federation/vite emits ESM remotes.
+          type: 'module',
         },
       ]);
       registered.add(manifest.id);

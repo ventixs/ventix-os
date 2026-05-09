@@ -4,7 +4,7 @@
 
 export { PluginOrchestrator, type OrchestratorEnv } from './lib/orchestrator';
 export { ImportLoader, type PluginLoader } from './lib/loader';
-export { MfLoader, initMfHost, SHARED_SINGLETONS } from './lib/mf-loader';
+export { MfLoader, initMfHost, type SharedLibFactories } from './lib/mf-loader';
 export {
   buildPluginContext,
   type ContextFactoryDeps,
