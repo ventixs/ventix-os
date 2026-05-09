@@ -30,6 +30,7 @@ export {
   type RouterApi,
   type PluginRouteSpec,
   type PluginRouteState,
+  type PluginPanel,
 } from './lib/router';
 
 export { type NavApi, type NavItemSpec } from './lib/nav';

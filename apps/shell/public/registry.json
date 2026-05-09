@@ -4,15 +4,24 @@
     "id": "com.demo.hello",
     "name": "Hello",
     "version": "1.0.0",
-    "vendor": { "name": "VENTIX" },
+    "vendor": {
+      "name": "VENTIX"
+    },
     "license": "Apache-2.0",
-    "engine": { "ventix": "^0.1.0" },
+    "engine": {
+      "ventix": "^0.1.0"
+    },
     "frontend": {
       "remoteEntry": "/plugins/com.demo.hello/index.js",
       "exposedModule": "./Plugin"
     },
     "navigation": [
-      { "id": "hello-home", "label": "Hello", "route": "/com.demo.hello/home", "order": 100 }
+      {
+        "id": "hello-home",
+        "label": "Hello",
+        "route": "/com.demo.hello/home",
+        "order": 100
+      }
     ]
   }
 ]

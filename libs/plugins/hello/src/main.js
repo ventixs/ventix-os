@@ -1,12 +1,9 @@
-// VENTIX Hello plugin — Phase 0 reference implementation.
+// VENTIX Hello plugin — Phase 0.5 reference implementation.
 //
-// Plain ESM (no TypeScript build) so the shell can `import()` it directly
-// from /plugins/com.demo.hello/index.js. Phase 1 swaps to a Module
-// Federation bundle without changing this file's exports.
-//
-// Conforms to ADR-0014 (no decorators) — but doesn't even use definePlugin
-// since that would require an SDK runtime import. The default export
-// matches VentixPluginModule's shape directly.
+// Plain ESM (no TypeScript build) so the shell can `import()` it directly.
+// Phase 1 swaps to a Module Federation bundle without changing this file's
+// exports. Conforms to ADR-0014 — no decorators; default export matches
+// VentixPluginModule's shape.
 
 export default {
   id: 'com.demo.hello',
@@ -18,18 +15,28 @@ export default {
       user: ctx.user.id,
     });
 
-    ctx.nav.register([
+    // Register a real route. The `panel` API renders title/body via the
+    // kernel's PluginPanelComponent — works without Module Federation.
+    // Plugins that ship Angular components use `loadComponent` instead
+    // (Phase 1 with MF, ADR-0004).
+    ctx.router.register([
       {
-        id: 'hello-home',
-        label: 'Hello',
-        route: '/com.demo.hello/home',
+        path: 'home',
+        title: 'Hello — VENTIX OS',
+        panel: {
+          title: 'Hello, VENTIX!',
+          body:
+            "You are looking at a route registered at runtime by " +
+            "the com.demo.hello plugin. The shell never knew about this " +
+            "URL at build time — the manifest declared the navigation " +
+            "item, the plugin's activate() hook called ctx.router.register(), " +
+            "and the kernel rendered this panel.",
+          footnote:
+            "Phase 1 (ADR-0004 / Module Federation) replaces this panel " +
+            "with a real Angular component shipped by the plugin.",
+        },
       },
     ]);
-
-    // Route registration is intentionally NOT included in Phase 0:
-    // it requires Module Federation to share the host's Angular instance.
-    // The nav item still appears; clicking it 404s in Phase 0.
-    // Phase 1 (M0 spike → ADR-0004) wires real route loading.
   },
 
   async deactivate() {

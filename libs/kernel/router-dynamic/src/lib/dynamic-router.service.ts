@@ -10,6 +10,7 @@
 import { EnvironmentInjector, Injectable, inject } from '@angular/core';
 import { Router, type Route } from '@angular/router';
 import type { Disposable, PluginId, PluginRouteSpec } from '@ventix/plugin-api';
+import { PluginPanelComponent } from './plugin-panel.component';
 
 /**
  * DI token plugin route components can inject to reach back into their
@@ -43,7 +44,19 @@ export class DynamicRouterService {
     const owned = new Set(routes.map((r) => r.path ?? ''));
     this.owners.set(pluginId, owned);
 
-    this.router.resetConfig([...this.router.config, ...routes]);
+    // Plugin routes must be inserted BEFORE wildcard fallback routes —
+    // Angular's first-match semantics would otherwise let `**` swallow
+    // every plugin path before it gets a chance.
+    const wildcardIdx = this.router.config.findIndex((r) => r.path === '**');
+    const next =
+      wildcardIdx === -1
+        ? [...this.router.config, ...routes]
+        : [
+            ...this.router.config.slice(0, wildcardIdx),
+            ...routes,
+            ...this.router.config.slice(wildcardIdx),
+          ];
+    this.router.resetConfig(next);
 
     return {
       dispose: () => this.unregister(pluginId),
@@ -71,18 +84,22 @@ export class DynamicRouterService {
     pluginInjector?: EnvironmentInjector,
   ): Route {
     const fullPath = `${pluginId}/${stripLeadingSlash(spec.path)}`;
-    // SAFETY: PluginRouteSpec.loadComponent returns Promise<unknown> by SDK
-    // contract; Angular's Route.loadComponent expects a typed return. The
-    // kernel doesn't introspect the resolved value — Angular does.
-    const route = {
-      path: fullPath,
-      loadComponent: spec.loadComponent as unknown,
-      data: {
-        ...(spec.data ?? {}),
-        pluginId,
-        ...(spec.permission ? { permission: spec.permission } : {}),
-      },
-    } as Route;
+
+    const data: Record<string, unknown> = {
+      ...(spec.data ?? {}),
+      pluginId,
+      ...(spec.permission ? { permission: spec.permission } : {}),
+      ...(spec.panel ? { panel: spec.panel } : {}),
+    };
+
+    // Either a real component (Phase 1 via MF) or the kernel's panel
+    // component reading route.data.panel (Phase 0.5).
+    const route: Route = spec.loadComponent
+      // SAFETY: PluginRouteSpec.loadComponent returns Promise<unknown> by SDK
+      // contract; Angular's Route.loadComponent expects a typed return.
+      ? ({ path: fullPath, loadComponent: spec.loadComponent as unknown, data } as Route)
+      : { path: fullPath, component: PluginPanelComponent, data };
+
     if (pluginInjector) {
       route.providers = [{ provide: PLUGIN_INJECTOR, useValue: pluginInjector }];
     }
