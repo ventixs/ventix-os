@@ -65,6 +65,12 @@
         "scope:sdk"
       ]
     },
+    "scope:tools": {
+      "onlyDependOnLibsWithTags": [
+        "scope:sdk",
+        "scope:shared"
+      ]
+    },
     "scope:shared": {
       "onlyDependOnLibsWithTags": [
         "scope:shared"

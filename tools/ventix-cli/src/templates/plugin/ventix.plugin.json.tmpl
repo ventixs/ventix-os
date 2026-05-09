@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ventix.dev/schemas/plugin.v1.json",
+  "id": "{{id}}",
+  "name": "{{displayName}}",
+  "version": "1.0.0",
+  "vendor": { "name": "{{vendor}}" },
+  "license": "{{license}}",
+  "engine": { "ventix": "^0.1.0" },
+  "frontend": {
+    "remoteEntry": "/plugins/{{id}}/index.js",
+    "exposedModule": "./Plugin"
+  },
+  "navigation": [
+    { "id": "{{short}}-home", "label": "{{displayName}}", "route": "/{{id}}/home", "order": 100 }
+  ]
+}

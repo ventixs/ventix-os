@@ -1,0 +1,25 @@
+# {{displayName}}
+
+VENTIX OS plugin scaffolded by `ventix create plugin`.
+
+## Develop
+
+From the workspace root:
+
+```bash
+pnpm ventix dev --plugin {{id}}
+```
+
+Then open `http://localhost:4200`. Edit `src/main.js` and the plugin
+hot-redeploys; reload the shell to see changes.
+
+## Manifest
+
+Defined in `ventix.plugin.json`. Conforms to RFC-0001.
+Run `pnpm ventix validate` to check the manifest.
+
+## Build for production
+
+```bash
+pnpm ventix build --plugin {{id}}
+```

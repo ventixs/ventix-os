@@ -1,0 +1,29 @@
+// {{displayName}} plugin — VENTIX OS plugin entry.
+// The default export matches VentixPluginModule's shape (see SDK ADR-0010).
+
+export default {
+  id: '{{id}}',
+  version: '1.0.0',
+
+  async activate(ctx) {
+    ctx.logger.info('{{displayName}} plugin activated', {
+      tenant: ctx.tenant.id,
+      user: ctx.user.id,
+    });
+
+    // Add runtime nav items here (manifest-declared items are already wired).
+    // Example:
+    //   ctx.nav.register([
+    //     { id: 'extra', label: 'Extra', route: '/{{id}}/extra' },
+    //   ]);
+    //
+    // Add routes here when Module Federation is wired (Phase 1, ADR-0004):
+    //   ctx.router.register([
+    //     { path: 'home', loadComponent: () => import('./home.component') },
+    //   ]);
+  },
+
+  async deactivate() {
+    // DisposableBag handles cleanup automatically (ADR-0011).
+  },
+};

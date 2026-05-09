@@ -1,0 +1,10 @@
+{
+  "name": "ventix-cli",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "tools/ventix-cli/src",
+  "tags": ["scope:tools"],
+  "targets": {
+    "lint": { "executor": "@nx/eslint:lint" }
+  }
+}

@@ -27,3 +27,4 @@ Each ADR captures one decision: context, decision, consequences. One paragraph e
 | [0019](./ADR-0019-state-vs-flow.md) | State vs flow — signals for state, RxJS for flow | Ratified |
 | [0020](./ADR-0020-registry-as-controlled-state.md) | Plugin registry as controlled state | Ratified |
 | [0021](./ADR-0021-runtime-stance-vs-author-dx.md) | Adversarial runtime, collaborative SDK | Ratified |
+| [0022](./ADR-0022-defer-oclif-to-phase-1.md) | Defer oclif to Phase 1; Phase 0 CLI uses `node:util.parseArgs` (partial supersede of 0009) | Ratified |
