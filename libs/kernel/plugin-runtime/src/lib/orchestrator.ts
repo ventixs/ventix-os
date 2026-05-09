@@ -19,6 +19,7 @@ import type { PluginId, VentixPluginModule } from '@ventix/plugin-api';
 import { PluginRegistry } from '@ventix/kernel-registry';
 import type { PluginLoader } from './loader';
 import { ImportLoader } from './loader';
+import { MfLoader } from './mf-loader';
 import { buildPluginContext, type ContextFactoryDeps } from './context-factory';
 
 /** Provided externally so the orchestrator stays unaware of tenant/user
@@ -39,7 +40,19 @@ export class PluginOrchestrator {
 
   private env?: OrchestratorEnv;
   private loader: PluginLoader = new ImportLoader();
+  private readonly mfLoader = new MfLoader();
   private readonly slots = new Map<PluginId, ActiveSlot>();
+
+  /**
+   * Pick a loader for the given manifest. Plugins shipped via Module
+   * Federation use a `/remoteEntry.js` entry by convention (ADR-0004);
+   * everything else falls back to dynamic import.
+   */
+  private loaderFor(manifest: ManifestV1): PluginLoader {
+    return manifest.frontend.remoteEntry.endsWith('/remoteEntry.js')
+      ? this.mfLoader
+      : this.loader;
+  }
 
   /** Wire env once during shell bootstrap. */
   configure(env: OrchestratorEnv): void {
@@ -76,7 +89,7 @@ export class PluginOrchestrator {
     // 2. Load.
     let mod: VentixPluginModule;
     try {
-      mod = await this.loader.load(manifest);
+      mod = await this.loaderFor(manifest).load(manifest);
     } catch (err) {
       this.registry.recordError(manifest.id, {
         code: 'LOAD_FAILED',

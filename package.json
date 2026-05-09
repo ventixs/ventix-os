@@ -17,9 +17,11 @@
     "ventix": "ventix"
   },
   "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^2.5.0",
     "@angular/build": "^20.3.25",
     "@angular/cli": "^20.3.25",
     "@angular/compiler-cli": "^20.3.20",
+    "@module-federation/vite": "^1.15.2",
     "@nx/angular": "^22.7.1",
     "@nx/eslint": "^22.7.1",
     "@nx/eslint-plugin": "^22.7.1",

@@ -1,0 +1,11 @@
+{
+  "name": "@ventix-plugins/hello-mf",
+  "version": "1.0.0",
+  "description": "VENTIX OS reference plugin shipped via Module Federation.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch"
+  }
+}
