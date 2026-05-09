@@ -11,7 +11,7 @@
  * One broken step never blanks the UI.
  */
 import { Injectable, inject, signal } from '@angular/core';
-import { PluginOrchestrator, type ContextFactoryDeps, type NavRegistrar } from '@ventix/kernel-runtime';
+import { PluginOrchestrator, initMfHost, type ContextFactoryDeps, type NavRegistrar } from '@ventix/kernel-runtime';
 import { DynamicRouterService } from '@ventix/kernel-router';
 import { TenantContext, UserContext } from './tenant-context.service';
 import { RegistryClient } from './registry-client.service';
@@ -32,6 +32,11 @@ export class KernelBootstrap {
       // 1. Phase 0 stubs at the single bootstrap edge (ADR-0007).
       this.tenantCtx.initialize({ id: 'dev-tenant', name: 'Dev' });
       this.userCtx.initialize({ id: 'dev-user', roles: ['admin'] });
+
+      // Initialize Module Federation host (ADR-0004). Idempotent. Plugins
+      // built as MF remotes share Angular + the SDK contract through this.
+      // Plain-JS plugins continue to work via ImportLoader without using MF.
+      initMfHost('ventix-shell');
 
       // 2. Wire orchestrator. NavRegistrar is a Phase 0 no-op since plugins
       //    declare nav in the manifest; runtime nav.register lands in Phase 1.
