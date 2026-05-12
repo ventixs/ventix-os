@@ -1,0 +1,19 @@
+{
+  "tenant-default": {
+    "displayName": "Local Dev Tenant",
+    "plugins": [
+      { "id": "com.demo.hello" }
+    ]
+  },
+  "tenant-empty": {
+    "displayName": "Empty Tenant (no plugins)",
+    "plugins": []
+  },
+  "tenant-power-user": {
+    "displayName": "Power User Tenant",
+    "plugins": [
+      { "id": "com.demo.hello" },
+      { "id": "com.demo.future-plugin" }
+    ]
+  }
+}

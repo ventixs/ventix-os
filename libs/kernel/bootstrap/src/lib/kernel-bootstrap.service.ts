@@ -22,6 +22,7 @@ import { PluginOrchestrator, initMfHost, type ContextFactoryDeps, type NavRegist
 import { DynamicRouterService } from '@ventix/kernel-router';
 import { TenantContext, UserContext } from './tenant-context.service';
 import { RegistryClient } from './registry-client.service';
+import { StubTenantSource, resolveTenantIdFromUrl } from './tenant-source';
 
 @Injectable({ providedIn: 'root' })
 export class KernelBootstrap {
@@ -29,6 +30,7 @@ export class KernelBootstrap {
   private readonly userCtx = inject(UserContext);
   private readonly orchestrator = inject(PluginOrchestrator);
   private readonly registryClient = inject(RegistryClient);
+  private readonly tenantSource = inject(StubTenantSource);
   private readonly router = inject(DynamicRouterService);
 
   private readonly _ready = signal(false);
@@ -36,8 +38,11 @@ export class KernelBootstrap {
 
   async run(): Promise<void> {
     try {
-      // 1. Phase 0 stubs at the single bootstrap edge (ADR-0007).
-      this.tenantCtx.initialize({ id: 'dev-tenant', name: 'Dev' });
+      // 1. Resolve tenant + activation set (RFC-0011). Phase 1 stub source;
+      //    M2 swaps StubTenantSource for HttpTenantSource backed by the gateway.
+      const tenantId = resolveTenantIdFromUrl();
+      const activation = await this.tenantSource.fetch(tenantId);
+      this.tenantCtx.initialize(activation.tenant);
       this.userCtx.initialize({ id: 'dev-user', roles: ['admin'] });
 
       // Initialize Module Federation host (ADR-0004). Idempotent. Plugins
@@ -63,14 +68,23 @@ export class KernelBootstrap {
       };
       this.orchestrator.configure({ factoryDeps: () => factoryDeps });
 
-      // 3 + 4.
-      const manifests = await this.registryClient.fetchInstalled();
+      // 3. Fetch the global registry (catalog). 4. Filter by tenant's active
+      //    set per RFC-0011: a plugin must be both PUBLISHED in the catalog
+      //    AND ACTIVATED for this tenant to reach LOADED state.
+      const allManifests = await this.registryClient.fetchInstalled();
+      const activeIds = new Set(activation.activePluginIds);
+      const eligible = allManifests.filter((m) => activeIds.has(m.id));
+      const skipped = allManifests
+        .filter((m) => !activeIds.has(m.id))
+        .map((m) => m.id);
       // eslint-disable-next-line no-console
       console.info('[VENTIX] kernel bootstrap', {
         tenant: factoryDeps.tenant,
-        plugins: manifests.length,
+        catalog: allManifests.length,
+        active: eligible.length,
+        skipped,
       });
-      await this.orchestrator.activateAll(manifests);
+      await this.orchestrator.activateAll(eligible);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('[VENTIX] kernel bootstrap failed', err);

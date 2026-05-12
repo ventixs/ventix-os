@@ -29,3 +29,5 @@ Each ADR captures one decision: context, decision, consequences. One paragraph e
 | [0021](./ADR-0021-runtime-stance-vs-author-dx.md) | Adversarial runtime, collaborative SDK | Ratified |
 | [0022](./ADR-0022-defer-oclif-to-phase-1.md) | Defer oclif to Phase 1; Phase 0 CLI uses `node:util.parseArgs` (partial supersede of 0009) | Ratified |
 | [0023](./ADR-0023-mf-spike-blocker.md) | MF spike paused — documented blocker, deferred to Phase 1.5 (relates to 0004) | Ratified |
+| [0024](./ADR-0024-auth-keycloak.md) | Auth strategy — Keycloak as identity provider (partial supersede of 0007) | Ratified |
+| [0025](./ADR-0025-deployment-single-vps.md) | Deployment topology — single VPS for Phase 1 | Ratified |
